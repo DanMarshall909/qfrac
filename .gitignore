@@ -9,6 +9,7 @@ export_presets.cfg
 bin/
 obj/
 .vs/
+.todo_state.json
 
 # OS artifacts
 Thumbs.db
