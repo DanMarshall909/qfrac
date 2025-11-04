@@ -1,0 +1,17 @@
+; Engine configuration file.
+; Manual edits are acceptable but prefer editor UI when available.
+
+config_version=5
+
+[application]
+
+config/name="qfrac"
+run/main_scene="res://scenes/Main.tscn"
+
+[dotnet]
+
+project/assembly_name="qfrac"
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
