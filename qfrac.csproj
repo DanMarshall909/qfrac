@@ -3,5 +3,8 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>QFrac</RootNamespace>
     <EnableDynamicLoading>true</EnableDynamicLoading>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <WarningsAsErrors>CA1416</WarningsAsErrors>
   </PropertyGroup>
 </Project>
