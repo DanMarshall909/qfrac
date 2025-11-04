@@ -1,0 +1,27 @@
+#!/bin/sh
+
+set -eu
+
+if ! command -v dotnet >/dev/null 2>&1; then
+  echo "dotnet SDK is required for linting. Install .NET 6 SDK or newer." >&2
+  exit 1
+fi
+
+echo "Running dotnet format to apply lint fixes..."
+if ! dotnet format --folder --no-restore --verbosity minimal --editorconfig .editorconfig; then
+  echo "dotnet format failed to run successfully." >&2
+  exit 1
+fi
+
+if ! git diff --quiet; then
+  echo "Formatting changes detected; restaging tracked files."
+  git ls-files -m | while read file; do
+    git add "$file"
+  done
+fi
+
+echo "Verifying formatting..."
+if ! dotnet format --folder --no-restore --verify-no-changes --verbosity quiet --editorconfig .editorconfig; then
+  echo "Formatting verification failed. Review the reported issues." >&2
+  exit 1
+fi

@@ -1,0 +1,2 @@
+# Ensure shell scripts remain POSIX-friendly
+.githooks/* text eol=lf
