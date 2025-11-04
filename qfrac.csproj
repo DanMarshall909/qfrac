@@ -6,5 +6,15 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
     <WarningsAsErrors>CA1416</WarningsAsErrors>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="ILGPU" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="**/*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Scripts/**/*.cs" />
+  </ItemGroup>
 </Project>
