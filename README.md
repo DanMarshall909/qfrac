@@ -4,11 +4,13 @@ A real-time 3D fractal viewer built with Godot 4.2.1 and C#, featuring GPU-accel
 
 ## Features
 
-- **True 3D Rendering**: View Mandelbulb fractals as actual 3D objects, not 2D projections
+- **True 3D Rendering**: View quaternion fractals as actual 3D objects, not 2D projections
+- **Multiple Fractal Types**: 5 different fractal formulas (Mandelbulb, Burning Ship, Mandelbox, Sphere Inversion, Quaternion Julia)
+- **Formula Morphing**: Seamlessly blend between any two fractal formulas in real-time
 - **GPU Acceleration**: ILGPU-powered compute kernels with CUDA support (CPU fallback available)
 - **Raymarching**: Distance estimation-based rendering for smooth fractal surfaces
 - **Interactive Navigation**: First-person camera controls for exploring fractal geometry
-- **Real-time Parameters**: Adjust fractal power on-the-fly (Mandelbulb power from 2.0 to 16.0)
+- **Real-time Parameters**: Adjust fractal power and morph amount on-the-fly
 - **Dynamic Lighting**: Surface normal calculation with diffuse and ambient lighting
 
 ## Technical Architecture
@@ -56,27 +58,68 @@ A real-time 3D fractal viewer built with Godot 4.2.1 and C#, featuring GPU-accel
 
 ## Controls
 
+### Camera
 | Input | Action |
 |-------|--------|
 | **W/A/S/D** | Move camera forward/left/back/right |
 | **Space** | Move camera up |
 | **Shift** | Move camera down |
 | **Mouse** | Look around (first-person view) |
-| **Q** | Decrease fractal power |
-| **E** | Increase fractal power |
 | **ESC** | Toggle mouse capture |
+
+### Fractal Parameters
+| Input | Action |
+|-------|--------|
+| **Q/E** | Decrease/Increase fractal power (2.0 - 16.0) |
+| **1** | Previous Formula 1 (cycle backwards) |
+| **2** | Next Formula 1 (cycle forwards) |
+| **3** | Previous Formula 2 (cycle backwards) |
+| **4** | Next Formula 2 (cycle forwards) |
+| **Z/X** | Decrease/Increase morph amount (0.0 - 1.0) |
+| **R** | Reset to defaults |
+
+### Available Formulas
+- **Mandelbulb**: Classic 3D fractal with spherical symmetry
+- **Burning Ship**: 3D version with absolute value operations
+- **Mandelbox**: Box-folding fractal with unique geometric properties
+- **Sphere Inversion**: Inversion-based fractal
+- **Quaternion Julia**: Julia set using quaternion mathematics
 
 ## How It Works
 
-### Mandelbulb Algorithm
+### Fractal Algorithms
 
-The Mandelbulb is a 3D fractal defined by iterating the formula:
+Each fractal formula uses a different iteration approach:
 
+**Mandelbulb**: Converts to spherical coordinates, applies power transformation
 ```
 z = z^n + c
 ```
 
-Where `z` and `c` are 3D points in space, and the power `n` (typically 8) determines the fractal's shape.
+**Burning Ship**: Applies absolute value before iteration (creates sharp edges)
+```
+z = |z|^n + c
+```
+
+**Mandelbox**: Uses box-folding and sphere-folding operations
+```
+Box fold → Sphere fold → Scale + translate
+```
+
+**Others**: Various mathematical transformations in 3D space
+
+### Formula Morphing
+
+The morphing system blends between two formulas by:
+1. Computing distance estimates for both formulas independently
+2. Linearly interpolating between the two distance values
+3. Using the morph amount (0.0 to 1.0) as the blend factor
+
+```
+final_distance = distance1 * (1 - morph) + distance2 * morph
+```
+
+This creates smooth transitions between completely different fractal geometries.
 
 ### Distance Estimation
 
@@ -110,7 +153,13 @@ Material on quad mesh
 ### Fractal Parameters (in `IlgpuFractal.cs`)
 
 ```csharp
-public float Power { get; set; } = 8.0f;           // Mandelbulb power (2-16)
+// Formula selection and morphing
+public FractalFormula Formula1 { get; set; } = FractalFormula.Mandelbulb;
+public FractalFormula Formula2 { get; set; } = FractalFormula.BurningShip;
+public float MorphAmount { get; set; } = 0.0f;     // 0 = Formula1, 1 = Formula2
+
+// Quality parameters
+public float Power { get; set; } = 8.0f;           // Fractal power (2-16)
 public int MaxIterations { get; set; } = 15;       // Detail level
 public float BailoutRadius { get; set; } = 2.0f;   // Iteration escape threshold
 ```
@@ -126,13 +175,17 @@ private int _renderHeight = 600;
 
 ## Future Enhancements
 
-- [ ] Additional fractal types (Quaternion Julia sets, Mandelbox)
-- [ ] UI panel for runtime parameter control
+- [x] Multiple fractal formulas (Mandelbulb, Burning Ship, Mandelbox, etc.)
+- [x] Formula morphing system
+- [ ] UI panel for runtime parameter control (currently keyboard-only)
+- [ ] Animated morphing (auto-cycle through formulas)
+- [ ] Custom Julia set constants
 - [ ] Color palette customization
 - [ ] Animation/keyframe recording
 - [ ] Screenshot/video export
 - [ ] Performance optimization (adaptive quality, LOD)
 - [ ] Ambient occlusion and advanced lighting
+- [ ] VR support for immersive exploration
 
 ## License
 

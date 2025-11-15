@@ -58,7 +58,16 @@ public partial class Main : Node3D
         UpdateFractalTexture();
 
         GD.Print("Initialization complete!");
-        GD.Print("Controls: WASD to move, Mouse to look around, ESC to toggle mouse capture, Q/E to change fractal power");
+        GD.Print("=== CONTROLS ===");
+        GD.Print("WASD/Space/Shift - Move camera");
+        GD.Print("Mouse - Look around");
+        GD.Print("Q/E - Change fractal power");
+        GD.Print("1/2 - Cycle Formula 1 (left bracket)");
+        GD.Print("3/4 - Cycle Formula 2 (right bracket)");
+        GD.Print("Z/X - Adjust morph amount between formulas");
+        GD.Print("R - Reset to defaults");
+        GD.Print("ESC - Toggle mouse capture");
+        GD.Print($"Starting with: {_fractal.Formula1} -> {_fractal.Formula2}, Morph: {_fractal.MorphAmount:F2}");
 
         Input.MouseMode = Input.MouseModeEnum.Captured;
         _mouseCaptured = true;
@@ -112,12 +121,62 @@ public partial class Main : Node3D
         if (Input.IsKeyPressed(Key.Q))
         {
             _fractal.Power = Mathf.Max(2.0f, _fractal.Power - delta * 2.0f);
-            GD.Print($"Power: {_fractal.Power}");
+            GD.Print($"Power: {_fractal.Power:F2}");
         }
         if (Input.IsKeyPressed(Key.E))
         {
             _fractal.Power = Mathf.Min(16.0f, _fractal.Power + delta * 2.0f);
-            GD.Print($"Power: {_fractal.Power}");
+            GD.Print($"Power: {_fractal.Power:F2}");
+        }
+
+        // Cycle Formula 1
+        if (Input.IsActionJustPressed("ui_text_backspace") || Input.IsKeyPressed(Key.Key1))
+        {
+            _fractal.Formula1 = (QFrac.Compute.FractalFormula)(((int)_fractal.Formula1 + 4) % 5);
+            GD.Print($"Formula 1: {_fractal.Formula1} -> {_fractal.Formula2}, Morph: {_fractal.MorphAmount:F2}");
+        }
+        if (Input.IsKeyPressed(Key.Key2))
+        {
+            _fractal.Formula1 = (QFrac.Compute.FractalFormula)(((int)_fractal.Formula1 + 1) % 5);
+            GD.Print($"Formula 1: {_fractal.Formula1} -> {_fractal.Formula2}, Morph: {_fractal.MorphAmount:F2}");
+        }
+
+        // Cycle Formula 2
+        if (Input.IsKeyPressed(Key.Key3))
+        {
+            _fractal.Formula2 = (QFrac.Compute.FractalFormula)(((int)_fractal.Formula2 + 4) % 5);
+            GD.Print($"Formula 2: {_fractal.Formula1} -> {_fractal.Formula2}, Morph: {_fractal.MorphAmount:F2}");
+        }
+        if (Input.IsKeyPressed(Key.Key4))
+        {
+            _fractal.Formula2 = (QFrac.Compute.FractalFormula)(((int)_fractal.Formula2 + 1) % 5);
+            GD.Print($"Formula 2: {_fractal.Formula1} -> {_fractal.Formula2}, Morph: {_fractal.MorphAmount:F2}");
+        }
+
+        // Adjust morph amount
+        if (Input.IsKeyPressed(Key.Z))
+        {
+            _fractal.MorphAmount = Mathf.Max(0.0f, _fractal.MorphAmount - delta * 0.5f);
+            GD.Print($"Morph: {_fractal.MorphAmount:F2} ({_fractal.Formula1} -> {_fractal.Formula2})");
+        }
+        if (Input.IsKeyPressed(Key.X))
+        {
+            _fractal.MorphAmount = Mathf.Min(1.0f, _fractal.MorphAmount + delta * 0.5f);
+            GD.Print($"Morph: {_fractal.MorphAmount:F2} ({_fractal.Formula1} -> {_fractal.Formula2})");
+        }
+
+        // Reset to defaults
+        if (Input.IsActionJustPressed("ui_home") || Input.IsKeyPressed(Key.R))
+        {
+            _fractal.Formula1 = QFrac.Compute.FractalFormula.Mandelbulb;
+            _fractal.Formula2 = QFrac.Compute.FractalFormula.BurningShip;
+            _fractal.MorphAmount = 0.0f;
+            _fractal.Power = 8.0f;
+            _cameraPos = new Vector3(0, 0, 3);
+            _yaw = 0f;
+            _pitch = 0f;
+            GD.Print("Reset to defaults");
+            GD.Print($"{_fractal.Formula1} -> {_fractal.Formula2}, Morph: {_fractal.MorphAmount:F2}, Power: {_fractal.Power:F2}");
         }
     }
 
